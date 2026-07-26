@@ -1,0 +1,170 @@
+openapi: 3.1.0
+info:
+  title: Conversational Barbie PDF Assistant API
+  version: 0.1.0
+  description: Public API contract for an anonymous, document-grounded RAG assistant over the Barbie PDF.
+servers:
+  - url: http://localhost:8000/api/v1
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service health
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+                  document_status:
+                    type: string
+                    enum: [pending, ready, failed]
+  /chat/sessions:
+    post:
+      summary: Start an anonymous conversation session
+      operationId: createSession
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+  /chat/sessions/{sessionId}:
+    delete:
+      summary: Reset a conversation session
+      operationId: deleteSession
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '204':
+          description: Session invalidated
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /chat/query:
+    post:
+      summary: Submit a question about the Barbie PDF
+      operationId: submitQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Query processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limited
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds until retry is allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  parameters:
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    SessionResponse:
+      type: object
+      required: [session_id, expires_in_seconds]
+      properties:
+        session_id:
+          type: string
+        expires_in_seconds:
+          type: integer
+          minimum: 1
+    QueryRequest:
+      type: object
+      required: [session_id, question]
+      properties:
+        session_id:
+          type: string
+        question:
+          type: string
+          minLength: 1
+          description: Natural-language question about the Barbie PDF.
+    QueryResponse:
+      type: object
+      required: [session_id, status, answer, evidence, processing_ms]
+      properties:
+        session_id:
+          type: string
+        status:
+          type: string
+          enum: [answered, insufficient_evidence]
+        answer:
+          type: string
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceItem'
+        processing_ms:
+          type: integer
+          minimum: 0
+    EvidenceItem:
+      type: object
+      required: [page_number, snippet_text]
+      properties:
+        page_number:
+          type: integer
+          minimum: 1
+        snippet_text:
+          type: string
+        retrieval_score:
+          type: number
+          minimum: 0
+          maximum: 1
+    ErrorResponse:
+      type: object
+      required: [error_code, message]
+      properties:
+        error_code:
+          type: string
+          enum:
+            - invalid_request
+            - session_not_found
+            - session_expired
+            - document_unavailable
+            - rate_limited
+            - internal_error
+        message:
+          type: string
+        retry_after_seconds:
+          type: integer
+          minimum: 1
