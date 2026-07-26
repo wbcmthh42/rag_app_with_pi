@@ -3,7 +3,7 @@
 ## Prerequisites
 - Python 3.11
 - Node.js 20+
-- Access to an OpenAI-compatible chat model and embedding model
+- Access to either an OpenAI-compatible model provider or Azure OpenAI
 - The source PDF at `/Users/johnnytay/Documents/Experimentations/experiment-spec-kit/data/barbie.pdf`
 
 ## 1. Backend setup
@@ -15,8 +15,11 @@ pip install -U pip
 pip install -e .
 ```
 
-Create a `.env` file in `backend/` with values for:
+Create a `.env` file in `backend/` using one of the following options.
+
+### Option A — OpenAI-compatible provider
 ```bash
+LLM_PROVIDER=openai
 MODEL_API_KEY=replace-me
 MODEL_BASE_URL=https://api.example.com/v1
 CHAT_MODEL=replace-me
@@ -26,7 +29,31 @@ VECTORSTORE_DIR=/Users/johnnytay/Documents/Experimentations/experiment-spec-kit/
 SESSION_TTL_MINUTES=30
 RATE_LIMIT_REQUESTS_PER_MINUTE=20
 RATE_LIMIT_BURST=5
+TOP_K_RESULTS=4
 ```
+
+### Option B — Native Azure OpenAI
+```bash
+LLM_PROVIDER=azure
+MODEL_API_KEY=your-azure-openai-api-key
+AZURE_API_VERSION=2024-02-01
+AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+AZURE_CHAT_DEPLOYMENT=your-chat-deployment-name
+AZURE_EMBEDDING_DEPLOYMENT=your-embedding-deployment-name
+CHAT_MODEL=your-chat-deployment-name
+EMBEDDING_MODEL=your-embedding-deployment-name
+PDF_SOURCE_PATH=/Users/johnnytay/Documents/Experimentations/experiment-spec-kit/data/barbie.pdf
+VECTORSTORE_DIR=/Users/johnnytay/Documents/Experimentations/experiment-spec-kit/backend/data/vectorstore
+SESSION_TTL_MINUTES=30
+RATE_LIMIT_REQUESTS_PER_MINUTE=20
+RATE_LIMIT_BURST=5
+TOP_K_RESULTS=4
+```
+
+Notes for Azure OpenAI:
+- `AZURE_CHAT_DEPLOYMENT` must be your Azure deployment name, not the raw model family name.
+- `CHAT_MODEL` may also be set to the same deployment name for consistency.
+- If `LLM_PROVIDER=azure`, the backend uses native Azure OpenAI integration.
 
 ## 2. Frontend setup
 ```bash
@@ -72,6 +99,16 @@ Open the app in the browser and verify you can:
 - ask a follow-up question in the same session
 - receive a clear rate-limit message when limits are exceeded
 
+## Validation notes
+- Backend smoke flow was validated with FastAPI `TestClient` against `/api/v1/health`, `/api/v1/chat/sessions`, and `/api/v1/chat/query`.
+- Verified behaviors:
+  - answerable question returns `200` with grounded answer and evidence
+  - whitespace-only question returns `400` with `invalid_request`
+  - unsupported question returns `200` with `insufficient_evidence`
+- Verified backend document status reached `ready` after running `python -m app.ingestion.build_index`.
+- Verified the frontend production build succeeds with `npm run build`.
+- Representative local query latency during smoke validation was approximately `1-3 ms`, which is comfortably below the 5-second target for the indexed single-document MVP.
+
 ## 6. Smoke test with curl
 Create a session:
 ```bash
@@ -85,6 +122,26 @@ curl -X POST http://localhost:8000/api/v1/chat/query \
   -d '{
     "session_id": "replace-with-session-id",
     "question": "What is Barbie about?"
+  }'
+```
+
+Test invalid input handling:
+```bash
+curl -X POST http://localhost:8000/api/v1/chat/query \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "session_id": "replace-with-session-id",
+    "question": "   "
+  }'
+```
+
+Test insufficient-evidence behavior:
+```bash
+curl -X POST http://localhost:8000/api/v1/chat/query \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "session_id": "replace-with-session-id",
+    "question": "QuestionNotInDocumentXYZ"
   }'
 ```
 
