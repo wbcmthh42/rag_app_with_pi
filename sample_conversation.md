@@ -265,7 +265,7 @@ Catch issues like:
 Use this:
 
 ```text
-Implement the full feature phase by phase from tasks.md. Keep the architecture aligned with the plan. Use Azure OpenAI for chat and embeddings, keep session memory anonymous and session-scoped, preserve single-PDF scope, and ensure greeting/small-talk is LLM-driven while document questions use RAG retrieval.
+Implement the full feature phase by phase from tasks.md. Keep the architecture aligned with the plan. Use Azure OpenAI for chat and embeddings, keep session memory anonymous and session-scoped, preserve single-PDF scope, ensure greeting/small-talk is LLM-driven while document questions use RAG retrieval, and add a root README.md that documents setup, usage, and architecture with at least one Mermaid diagram.
 ```
 
 ## Optional stronger version
@@ -363,7 +363,7 @@ Check for missing coverage across Azure config, embeddings retrieval, greeting s
 
 ## `/speckit-implement`
 ```text
-Implement the full app from tasks.md with Azure-powered chat and embeddings, single-PDF RAG, anonymous session memory, and LLM-driven greetings.
+Implement the full app from tasks.md with Azure-powered chat and embeddings, single-PDF RAG, anonymous session memory, LLM-driven greetings, and a README.md with a Mermaid architecture or flow diagram.
 ```
 
 ---
@@ -374,3 +374,4 @@ Implement the full app from tasks.md with Azure-powered chat and embeddings, sin
 - Keep real secrets only in `backend/.env`, never in `backend/.env.example`.
 - If you want truly low back-and-forth, put all critical defaults into the initial `/speckit-specify` prompt.
 - The more precise the `/speckit-specify` prompt is, the less `/speckit-clarify` will need to ask.
+- If you want documentation generated as part of the zero-shot flow, explicitly mention it in `/speckit-implement` (for example: create a root README.md with setup, usage, and Mermaid diagrams).
