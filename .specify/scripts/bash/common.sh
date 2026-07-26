@@ -171,12 +171,17 @@ hook_defined() {
 # Silently does nothing if the hook is not defined.
 run_hook() {
     local hook_name="$1"; shift
-    local -a args=("$@")
+    local -a args=()
+    if (( $# > 0 )); then
+        args=("$@")
+    fi
     _get_hook_commands "$hook_name" | while IFS= read -r -d '' cmd; do
-        for kv in "${args[@]}"; do
-            local key="${kv%%=*}" val="${kv#*=}"
-            cmd="${cmd//\{\{$key\}\}/$val}"
-        done
+        if (( ${#args[@]} > 0 )); then
+            for kv in "${args[@]}"; do
+                local key="${kv%%=*}" val="${kv#*=}"
+                cmd="${cmd//\{\{$key\}\}/$val}"
+            done
+        fi
         eval "$cmd"
     done
 }
