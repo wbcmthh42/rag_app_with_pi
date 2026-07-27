@@ -19,3 +19,7 @@ This project uses an opinionated local tooling layer to generate the artifacts t
 - Generate a plan: `/speckit-plan` — converts an approved spec into a structured plan.
 - Break into tasks: `/speckit-tasks` — decomposes a plan into trackable tasks.
 - Implement: `/speckit-implement` — works through tasks and updates checklists.
+
+### Reference
+
+- Pi Spec-Kit package: https://pi.dev/packages/@the-agency/pi-spec-kit?page=46

@@ -2,6 +2,9 @@
 
 This file shows a **minimal back-and-forth**, **copy-paste-friendly** workflow for building this app with Spec-Kit.
 
+Reference:
+- Pi Spec-Kit package: https://pi.dev/packages/@the-agency/pi-spec-kit?page=46
+
 Goal: create a **public-facing agentic RAG web app** over `data/barbie.pdf` using:
 - **LangGraph**
 - **FastAPI** backend

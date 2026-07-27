@@ -291,6 +291,7 @@ curl -X POST http://localhost:8000/api/v1/chat/query \
 
 ## Development References
 
+- Pi Spec-Kit package: https://pi.dev/packages/@the-agency/pi-spec-kit?page=46
 - Spec workflow example: `sample_conversation.md`
 - Feature spec: `specs/001-agentic-rag-app/spec.md`
 - Plan: `specs/001-agentic-rag-app/plan.md`
