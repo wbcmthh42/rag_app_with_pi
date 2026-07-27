@@ -7,6 +7,8 @@ Goal: create a **public-facing agentic RAG web app** over `data/barbie.pdf` usin
 - **FastAPI** backend
 - **React/Vite** frontend
 - **Azure OpenAI** for chat + embeddings
+- **uv** for Python dependency management
+- **pinned Python package versions** in `pyproject.toml`
 - **anonymous sessions**
 - **page-referenced evidence**
 - **session-only memory**
@@ -80,6 +82,9 @@ The app must have:
 - a FastAPI backend
 - LangGraph orchestration for retrieval + answer flow
 - Azure OpenAI for chat generation and embeddings
+- uv for Python dependency management
+- pinned Python package versions in pyproject.toml
+- a uv.lock file generated during implementation
 - anonymous public access with no sign-in
 - session-only conversation memory
 - no cross-session persistence
@@ -169,7 +174,8 @@ Use this:
 
 ```text
 Create the implementation plan for this feature using:
-- Python 3.11 backend
+- Python 3.11 backend managed with uv
+- pinned Python dependencies in pyproject.toml and a generated uv.lock
 - FastAPI
 - LangGraph
 - React + Vite frontend
@@ -203,7 +209,9 @@ Use this:
 
 ```text
 Generate an executable tasks.md organized by user story for this app. Include tasks for:
-- backend setup
+- backend setup with uv
+- pinned Python dependencies in pyproject.toml
+- generation of uv.lock
 - frontend setup
 - Azure OpenAI configuration support
 - embedding-based indexing of the Barbie PDF
@@ -265,7 +273,7 @@ Catch issues like:
 Use this:
 
 ```text
-Implement the full feature phase by phase from tasks.md. Keep the architecture aligned with the plan. Use Azure OpenAI for chat and embeddings, keep session memory anonymous and session-scoped, preserve single-PDF scope, ensure greeting/small-talk is LLM-driven while document questions use RAG retrieval, and add a root README.md that documents setup, usage, and architecture with at least one Mermaid diagram.
+Implement the full feature phase by phase from tasks.md. Keep the architecture aligned with the plan. Use Azure OpenAI for chat and embeddings, use uv for Python dependency management, pin Python package versions in pyproject.toml, generate uv.lock, keep session memory anonymous and session-scoped, preserve single-PDF scope, ensure greeting/small-talk is LLM-driven while document questions use RAG retrieval, and add a root README.md that documents setup, usage, and architecture with at least one Mermaid diagram.
 ```
 
 ## Optional stronger version
@@ -277,6 +285,9 @@ Implement all tasks in tasks.md. Requirements that must not be dropped:
 - FastAPI backend
 - LangGraph orchestration
 - Azure OpenAI native support
+- uv-managed Python dependencies
+- pinned Python versions in pyproject.toml
+- generated uv.lock
 - embedding-based retrieval over data/barbie.pdf
 - source evidence with snippet text and page references
 - anonymous public access
@@ -348,12 +359,12 @@ Use the spec defaults unless a clarification is truly blocking correctness.
 
 ## `/speckit-plan`
 ```text
-Plan this using Python 3.11, FastAPI, LangGraph, React/Vite, Azure OpenAI, local vector index, and separated frontend/backend structure.
+Plan this using Python 3.11 managed with uv, pinned dependencies in pyproject.toml plus uv.lock, FastAPI, LangGraph, React/Vite, Azure OpenAI, local vector index, and separated frontend/backend structure.
 ```
 
 ## `/speckit-tasks`
 ```text
-Generate implementation-ready tasks for Azure chat + embeddings, vector retrieval, LangGraph flow, FastAPI APIs, frontend chat UX, evidence rendering, rate limiting, session memory, and greeting/small-talk support.
+Generate implementation-ready tasks for uv setup, pinned pyproject.toml dependencies, uv.lock generation, Azure chat + embeddings, vector retrieval, LangGraph flow, FastAPI APIs, frontend chat UX, evidence rendering, rate limiting, session memory, and greeting/small-talk support.
 ```
 
 ## `/speckit-analyze`
@@ -363,7 +374,7 @@ Check for missing coverage across Azure config, embeddings retrieval, greeting s
 
 ## `/speckit-implement`
 ```text
-Implement the full app from tasks.md with Azure-powered chat and embeddings, single-PDF RAG, anonymous session memory, LLM-driven greetings, and a README.md with a Mermaid architecture or flow diagram.
+Implement the full app from tasks.md with uv-managed Python dependencies, pinned pyproject.toml versions, a generated uv.lock, Azure-powered chat and embeddings, single-PDF RAG, anonymous session memory, LLM-driven greetings, and a README.md with a Mermaid architecture or flow diagram.
 ```
 
 ---
